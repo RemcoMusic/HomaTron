@@ -1,39 +1,36 @@
 package HomaTron.Database;
 import java.sql.*; 
-
+import org.json.JSONObject;
+import org.json.JSONArray;
 
 public class databaseConnection 
 {
-	private boolean foo = true;
+	private boolean setUpdateCheck = true;
 	
 	public databaseConnection()
 	{
-		
+		//Constructor
 	}
 	
-	public void checkForUpdate()
+	public void checkForUpdate() //This method will check if there is an update in the Database
 	{
 		try
 		{  
 			
-			while(foo)
+			while(setUpdateCheck)
 			{
 				Class.forName("com.mysql.jdbc.Driver");  
-				Connection con=DriverManager.getConnection("jdbc:mysql://192.168.178.45:3306/Test","HomaTron","HomaTron");  
+				Connection con=DriverManager.getConnection("jdbc:mysql://83.86.242.110:3306/webapp","HomaTron","HomaTron");  
 			
 				Statement stmt=con.createStatement();  
 				ResultSet rs=stmt.executeQuery("select * from status");  
-			
-				/*while(rs.next()) 
-				{ 
-					System.out.println(rs.getInt(2));  
-				}*/
+				
 				rs.next();
 				if(rs.getInt("status") == 1)
 				{
 					pullTables();
 					con.close(); 
-					foo = false;
+					setUpdateCheck = false;
 				}
 				con.close();
 			}
@@ -44,12 +41,12 @@ public class databaseConnection
 		}  
 	}
 	
-	public void pullTables()
+	public void pullTables() //This method will pull the new data from the Database when this is updated
 	{
 		try
 		{
 			Class.forName("com.mysql.jdbc.Driver");  
-			Connection con=DriverManager.getConnection("jdbc:mysql://192.168.178.45:3306/Test","HomaTron","HomaTron");  
+			Connection con=DriverManager.getConnection("jdbc:mysql://83.86.242.110:3306/webapp","HomaTron","HomaTron");  
 	
 			Statement stmt = con.createStatement();  
 			ResultSet rs = stmt.executeQuery("select * from outputdevice");  
@@ -62,7 +59,7 @@ public class databaseConnection
 			Statement stmt1 = con.createStatement();  
 			int rs1 = stmt1.executeUpdate("UPDATE `Test`.`status` SET `status`='0' WHERE `idstatus`='1'");
 			
-			foo = true;
+			setUpdateCheck = true;
 			checkForUpdate();
 			con.close();		
 		}
@@ -72,42 +69,38 @@ public class databaseConnection
 		}  
 	}
 	
-	public void setDefaultData()
+	public void setDefaultData() //This method will set the default data on startup to check the differents
 	{
 		try
-		{
-			int deviceID;
-			int status; 
-
-			int deviceID2;
-			int status2; 
-			
+		{ 
 			Class.forName("com.mysql.jdbc.Driver");  
-			Connection con=DriverManager.getConnection("jdbc:mysql://192.168.178.45:3306/Test","HomaTron","HomaTron");  
+			Connection con=DriverManager.getConnection("jdbc:mysql://83.86.242.110:3306/webapp","HomaTron","HomaTron");  
 	
 			Statement stmt = con.createStatement();  
 			ResultSet rs = stmt.executeQuery("select * from outputdevice");  
 	
-			/*while(rs.next()) 
+			JSONArray array = new JSONArray();
+			int deviceID;
+			int status;
+
+			while(rs.next()) 
 			{ 
-				System.out.println(rs.getInt(1));  
-			}*/
-			
-			rs.next();
-			deviceID = rs.getInt("OutputDeviceID");
-			status = rs.getInt("Online");
-			rs.next();
-			deviceID2 = rs.getInt("OutputDeviceID");
-			status2 = rs.getInt("Online");
-			
-			System.out.println("Het Device ID = " + deviceID);
-			System.out.println("De status van de Device = " + status);
-			
-			System.out.println("Het Device ID = " + deviceID2);
-			System.out.println("De status van de Device = " + status2);
-			if(status2 == 0 ) {
-				mqtt.publishToBroker("homatron", "022:003");
+				JSONObject item = new JSONObject();
+				deviceID = rs.getInt("OutputDeviceID");
+				status = rs.getInt("Online");
+				
+				item.put("DeviceID", deviceID);
+				item.put("Status", status);
+				array.put(item);
+
+				//System.out.println(rs.getInt(1));  
 			}
+			
+			String message = array.toString();
+			
+			System.out.println("Inhoud van de Array: " + message);
+			
+			System.out.println(array.getJSONObject(0).get("DeviceID"));
 			
 			
 			con.close();

@@ -7,7 +7,7 @@ public class main
 	public static void main(String[] args) 
 	{
 		
-		//test.setDefaultData();
+		test.setDefaultData();
 		//test.checkForUpdate();
 
 	}
