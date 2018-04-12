@@ -6,10 +6,11 @@ import org.json.JSONArray;
 public class databaseConnection 
 {
 	private boolean setUpdateCheck = true;
+	private JSONArray array1 = new JSONArray();
 	
 	public databaseConnection()
 	{
-		//Constructor
+		
 	}
 	
 	public void checkForUpdate() //This method will check if there is an update in the Database
@@ -102,15 +103,25 @@ public class databaseConnection
 			
 			System.out.println(array.getJSONObject(0).get("DeviceID"));
 			
+			setDefaultData(array);
 			
 			con.close();
 		}
 		catch(Exception e)
 		{ 
 			System.out.println(e);
-		}  
+		} 
 	}
-
+	
+	public void setDefaultData(JSONArray array)
+	{
+		this.array1 = array;
+	}
+	
+	public JSONArray getDefaultData()
+	{
+		return this.array1;
+	}
 }
 
 
