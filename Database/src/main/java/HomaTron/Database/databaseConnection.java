@@ -5,15 +5,16 @@ import org.json.JSONArray;
 
 public class databaseConnection 
 {
+	private sensorHandler Handler = new sensorHandler();
+	
 	private JSONArray defaultArray = new JSONArray();
 	private JSONArray newArray = new JSONArray();
 	
 	private String Database = "HomaTron";
-	private String DeviceID = "DeviceID";
-	private String Status = "Online";
 	
 	public databaseConnection()
 	{
+		pullDefaultData();
 	}
 	
 	public boolean checkForUpdate(boolean setUpdateCheck) //This method will check if there is an update in the Database
@@ -27,7 +28,8 @@ public class databaseConnection
 				Connection con=DriverManager.getConnection("jdbc:mysql://83.86.242.110:3306/" + Database,"HomaTron","HomaTron");  
 			
 				Statement stmt=con.createStatement();  
-				ResultSet rs=stmt.executeQuery("select * from status");  
+				ResultSet rs=stmt.executeQuery("select * from HomaTron.status");  
+				
 				
 				rs.next();
 				if(rs.getInt("status") == 1)
@@ -37,6 +39,8 @@ public class databaseConnection
 					setUpdateCheck = false;
 				}
 				con.close();
+				Handler.checkValueWithSensor(getDefaultData());
+				
 			}
 		}
 		catch(Exception e)
@@ -54,37 +58,52 @@ public class databaseConnection
 			Connection con=DriverManager.getConnection("jdbc:mysql://83.86.242.110:3306/" + Database,"HomaTron","HomaTron");  
 	
 			Statement stmt = con.createStatement();  
-			ResultSet rs = stmt.executeQuery("select * from device");  
+			ResultSet rs = stmt.executeQuery("select * from smartrow");  
 	
 			JSONArray array = new JSONArray();
-			int deviceID;
-			int status;
+			int rowID;
+			String operator;
+			int inputValue;
+			int outputCommand;
+			int outputDeviceID;
+			int inputDeviceID;
 			
 			while(rs.next()) 
 			{ 
 				JSONObject item = new JSONObject();
-				deviceID = rs.getInt(DeviceID);
-				status = rs.getInt(Status);
+				rowID = rs.getInt("RowID");
+				operator = rs.getString("operator");
+				inputValue = rs.getInt("inputValue");
+				outputCommand = rs.getInt("outputValue");
+				outputDeviceID = rs.getInt("outputdevice_ID");
+				inputDeviceID = rs.getInt("inputdevice_ID");
 				
-				item.put("DeviceID", deviceID);
-				item.put("Status", status);
+				item.put("rowID", rowID);
+				item.put("operator", operator);
+				item.put("inputValue", inputValue);
+				item.put("outputCommand", outputCommand);
+				item.put("outputDeviceID", outputDeviceID);
+				item.put("inputDeviceID", inputDeviceID);
 				array.put(item);
-				
-				//System.out.println(rs.getInt(1));  
 			}
 			
 			
 			String message = array.toString();
 			
 			System.out.println();
+			System.out.println("=====Database Connection=====");
 			System.out.println("databaseConnection: Inhoud van de new Array: " + message);
+			System.out.println("=====Database Connection=====");
+			System.out.println();
 			
 			setNewData(array);
+			setDefaultData(array);
 			
 			Statement stmt1 = con.createStatement();  
 			stmt1.executeUpdate("UPDATE `HomaTron`.`status` SET `status`='0' WHERE `status`='1'");
 			
-			con.close();		
+			con.close();
+			checkForUpdate(true);
 		}
 		catch(Exception e)
 		{ 
@@ -100,28 +119,41 @@ public class databaseConnection
 			Connection con=DriverManager.getConnection("jdbc:mysql://83.86.242.110:3306/" + Database,"HomaTron","HomaTron");  
 	
 			Statement stmt = con.createStatement();  
-			ResultSet rs = stmt.executeQuery("select * from device");  
+			ResultSet rs = stmt.executeQuery("select * from smartrow");  
 	
 			JSONArray array = new JSONArray();
-			int deviceID;
-			int status;
-
+			int rowID;
+			String operator;
+			int inputValue;
+			int outputCommand;
+			int outputDeviceID;
+			int inputDeviceID;
+			
 			while(rs.next()) 
 			{ 
 				JSONObject item = new JSONObject();
-				deviceID = rs.getInt(DeviceID);
-				status = rs.getInt(Status);
+				rowID = rs.getInt("RowID");
+				operator = rs.getString("operator");
+				inputValue = rs.getInt("inputValue");
+				outputCommand = rs.getInt("outputValue");
+				outputDeviceID = rs.getInt("outputdevice_ID");
+				inputDeviceID = rs.getInt("inputdevice_ID");
 				
-				item.put("DeviceID", deviceID);
-				item.put("Status", status);
-				array.put(item);
-
-				//System.out.println(rs.getInt(1));  
+				item.put("rowID", rowID);
+				item.put("operator", operator);
+				item.put("inputValue", inputValue);
+				item.put("outputCommand", outputCommand);
+				item.put("outputDeviceID", outputDeviceID);
+				item.put("inputDeviceID", inputDeviceID);
+				array.put(item);  
 			}
 			
 			String message = array.toString();
 			
+			System.out.println();
+			System.out.println("=====Database Connection=====");
 			System.out.println("databaseConnection: Inhoud van de default Array: " + message);
+			System.out.println("=====Database Connection=====");
 			System.out.println();
 			
 			setDefaultData(array);
