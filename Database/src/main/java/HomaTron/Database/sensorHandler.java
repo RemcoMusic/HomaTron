@@ -6,7 +6,8 @@ import org.json.JSONException;
 
 public class sensorHandler 
 {
-	private String formattedID; 
+	private String formattedID;
+	private String formattedSensorID;
 	private String formattedCommand; 
 
 	public static int value;
@@ -17,7 +18,7 @@ public class sensorHandler
 	
 	public int checkSensor(int deviceID)
 	{	
-		formatID(deviceID);
+		formatSensorID(deviceID);
 		mqtt.checkSensor(getFormattedID());
 		System.out.println("Result: " + value);	 
 		return value;		
@@ -89,6 +90,12 @@ public class sensorHandler
 		}
 	}
 	
+	public void formatSensorID(int ID)
+	{
+		String formattedID = String.format("%03d", ID);
+		setFormattedID(formattedID);
+	}
+	
 	public void formatID(int ID)
 	{
 		String formattedID = String.format("%03d", ID);
@@ -99,6 +106,16 @@ public class sensorHandler
 	{
 		String formattedCommand = String.format("%03d", Command);
 		setFormattedCommand(formattedCommand);
+	}
+	
+	public void setFormattedSensorID(String string)
+	{
+		this.formattedSensorID = string;
+	}
+	
+	public String getFormattedSensorID()
+	{
+		return this.formattedSensorID;
 	}
 	
 	public void setFormattedID(String string)
