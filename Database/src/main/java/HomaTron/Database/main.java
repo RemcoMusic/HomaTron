@@ -5,8 +5,7 @@ import org.json.JSONException;
 public class main 
 {
 	
-	private static databaseConnection test = new databaseConnection();
-	//private static eventHandler eventHandler = new eventHandler();
+	private static databaseConnection test = new databaseConnection();	
 	
 	public static void main(String[] args) 
 	{

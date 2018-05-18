@@ -18,7 +18,7 @@ public class databaseConnection
 	}
 	
 	public boolean checkForUpdate(boolean setUpdateCheck) //This method will check if there is an update in the Database
-	{
+	{		
 		try
 		{  
 			
@@ -30,17 +30,26 @@ public class databaseConnection
 				Statement stmt=con.createStatement();  
 				ResultSet rs=stmt.executeQuery("select * from HomaTron.status");  
 				
-				
 				rs.next();
 				if(rs.getInt("status") == 1)
 				{
 					pullTables();
 					con.close(); 
 					setUpdateCheck = false;
+					System.out.println(rs.getInt("status"));
 				}
 				con.close();
 				Handler.checkValueWithSensor(getDefaultData());
 				
+				
+				try {
+					//System.out.println("Sleeping");
+					Thread.sleep(500);		
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
+				}
+				
+								
 			}
 		}
 		catch(Exception e)

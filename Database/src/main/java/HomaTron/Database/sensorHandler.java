@@ -8,16 +8,19 @@ public class sensorHandler
 {
 	private String formattedID; 
 	private String formattedCommand; 
+
+	public static int value;
 	
 	public sensorHandler()
-	{
-		
+	{	
 	}
 	
 	public int checkSensor(int deviceID)
-	{
-		//Hier kan de methode komen om de sensor data op te vragen 
-		return 5;
+	{	
+		formatID(deviceID);
+		mqtt.checkSensor(getFormattedID());
+		System.out.println("Result: " + value);	 
+		return value;		
 	}
 	
 	public void checkValueWithSensor(JSONArray array)
@@ -31,16 +34,15 @@ public class sensorHandler
 				int databaseValue = array.getJSONObject(i).getInt("inputValue");
 				String operator = array.getJSONObject(i).getString("operator");
 				int outputCommand = array.getJSONObject(i).getInt("outputCommand");
-				intFormatting(outputDeviceID, outputCommand);
-				
-				//System.out.println(getFormattedID());
-				//System.out.println(getFormattedCommand());
+				formatID(outputDeviceID);
+				formatCommand(outputCommand);
 		
 				if(operator.equalsIgnoreCase("="))
 				{
 					if(checkSensor(deviceID) == databaseValue)
 					{
-						mqtt.publishToBroker("HomaTron", getFormattedID() + ":" + getFormattedCommand());
+						System.out.println("operator = ");
+						mqtt.publishToBroker("homatron", getFormattedID() + ":" + getFormattedCommand());
 					}
 				}
 				
@@ -48,7 +50,8 @@ public class sensorHandler
 				{
 					if(checkSensor(deviceID) < databaseValue)
 					{
-						mqtt.publishToBroker("HomaTron", getFormattedID() + ":" + getFormattedCommand());
+						System.out.println("operator < ");
+						mqtt.publishToBroker("homatron", getFormattedID() + ":" + getFormattedCommand());
 					}
 				}
 				
@@ -56,24 +59,45 @@ public class sensorHandler
 				{
 					if(checkSensor(deviceID) > databaseValue)
 					{
-						mqtt.publishToBroker("HomaTron", getFormattedID() + ":" + getFormattedCommand());
+						System.out.println("operator > ");
+						mqtt.publishToBroker("homatron", getFormattedID() + ":" + getFormattedCommand());
+					}
+				}
+				
+				if(operator.equalsIgnoreCase(">="))
+				{
+					if(checkSensor(deviceID) >= databaseValue)
+					{
+						System.out.println("operator >= ");
+						mqtt.publishToBroker("homatron", getFormattedID() + ":" + getFormattedCommand());
+					}
+				}
+				
+				if(operator.equalsIgnoreCase("<="))
+				{
+					if(checkSensor(deviceID) <= databaseValue)
+					{
+						System.out.println("operator <= ");
+						mqtt.publishToBroker("homatron", getFormattedID() + ":" + getFormattedCommand());
 					}
 				}
 			} 
 			catch (JSONException e) 
 			{
-				System.out.println("Ja dan gebeurt er maar niks");
+				System.out.println("There is no data to compare");
 			}				
 		}
 	}
 	
-	public void intFormatting(int ID, int Command)
+	public void formatID(int ID)
 	{
-		
 		String formattedID = String.format("%03d", ID);
-		String formattedCommand = String.format("%03d", Command);
-		
 		setFormattedID(formattedID);
+	}
+
+	public void formatCommand(int Command)
+	{
+		String formattedCommand = String.format("%03d", Command);
 		setFormattedCommand(formattedCommand);
 	}
 	
