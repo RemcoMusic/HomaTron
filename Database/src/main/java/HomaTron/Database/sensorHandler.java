@@ -19,7 +19,7 @@ public class sensorHandler
 	public int checkSensor(int deviceID)
 	{	
 		formatSensorID(deviceID);
-		mqtt.checkSensor(getFormattedID());
+		mqtt.checkSensor(getFormattedSensorID());
 		System.out.println("Result: " + value);	 
 		return value;		
 	}
@@ -93,7 +93,7 @@ public class sensorHandler
 	public void formatSensorID(int ID)
 	{
 		String formattedID = String.format("%03d", ID);
-		setFormattedID(formattedID);
+		setFormattedSensorID(formattedID);
 	}
 	
 	public void formatID(int ID)
