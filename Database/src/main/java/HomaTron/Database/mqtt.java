@@ -15,12 +15,13 @@ public class mqtt implements MqttCallback
 	static String incomingIDrequest;
 	static String incomingID;
 	int intValue;
+	String id;
 	static boolean messageRecieved = false;
 	
 	public static void publishToBroker(String topic, String content)	
 	{
 	    int qos             = 0;
-	    String broker       = "tcp://192.168.178.45:1883";
+	    String broker       = "tcp://127.0.0.1:1883";
 	    String clientId     = "JavaSample23rfazc";
 		     
 	    MemoryPersistence persistence = new MemoryPersistence();
@@ -36,7 +37,7 @@ public class mqtt implements MqttCallback
 
 	        System.out.println("Connected");
 	        
-	        sampleClient.subscribe("foo");
+	        sampleClient.subscribe("homatron");
 	        
 	        System.out.println("Publishing message: "+content);
 	        MqttMessage message = new MqttMessage(content.getBytes());
@@ -58,28 +59,9 @@ public class mqtt implements MqttCallback
 	    }
 	}
 	
-	public static void checkSensor(String SensorID) 
-	{
-		incomingID = SensorID;
-		incomingIDrequest = SensorID + ":999";
-		new mqtt().Connect();	
-			
-		while(messageRecieved == false) 
-		{
-			try 
-			{
-				Thread.sleep(100);
-			} 
-			catch (InterruptedException e) 
-			{
-				e.printStackTrace();
-			}
-		}			
-	}
-	
 	public void Connect() 
 	{
-		String broker       = "tcp://192.168.178.45:1883";
+		String broker       = "tcp://127.0.0.1:1883";
 		String clientId     = "1203809fjase908";
 		
 		MemoryPersistence persistence = new MemoryPersistence();
@@ -95,7 +77,7 @@ public class mqtt implements MqttCallback
 	        client.subscribe("homatronSensor");
 	        //System.out.println("Subscribed"); 
 	        
-	        String content = incomingIDrequest;
+	        String content = sensorHandler.incomingIDrequest;
 			//System.out.println("Publishing message: "+content);
 	        MqttMessage message = new MqttMessage(content.getBytes());	      
 	        client.publish("homatron", message);
@@ -112,24 +94,31 @@ public class mqtt implements MqttCallback
 	{	
 	}
 
-	public void messageArrived(String topic, MqttMessage message) throws Exception 
+	public static void test()
 	{
+		new mqtt().Connect();
+	}
+	
+	public void messageArrived(String topic, MqttMessage message) throws Exception 
+	{	
 		 String messageString = message.toString();	 
 		 String id = messageString.substring(0, 3);	 
 		 String value = messageString.substring(4, messageString.length());
 		 		 
-		 //System.out.println("Recieved data from id: " + id);	 
-		 //System.out.println("Value: " + value);	 
+		 System.out.println("Recieved data from id: " + id);	 
+		 System.out.println("Value: " + value);	 
 		 
 		 intValue = Integer.parseInt(value);
-		 SetValue(intValue);	    
+		 SetValue(intValue, id);	    
 	}
 	
-	private void SetValue(int x) 
+	private void SetValue(int x, String y) 
 	{
 		//System.out.println("Value Set");	 
-		sensorHandler.value = x; 	
+		sensorHandler.value = x;
+		sensorHandler.id = y;
 		messageRecieved = true;
+		
 	}
 
 	public void deliveryComplete(IMqttDeliveryToken token) 

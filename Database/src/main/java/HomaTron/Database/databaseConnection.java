@@ -15,17 +15,19 @@ public class databaseConnection
 	public databaseConnection()
 	{
 		pullDefaultData();
+		Handler.pushSensorData(defaultArray);
 	}
 	
 	public boolean checkForUpdate(boolean setUpdateCheck) //This method will check if there is an update in the Database
 	{		
 		try
 		{  
+			Class.forName("com.mysql.jdbc.Driver");  
+			Connection con=DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/" + Database,"HomaTron","HomaTron");
 			
 			while(setUpdateCheck)
 			{
-				Class.forName("com.mysql.jdbc.Driver");  
-				Connection con=DriverManager.getConnection("jdbc:mysql://83.86.242.110:3306/" + Database,"HomaTron","HomaTron");  
+				  
 			
 				Statement stmt=con.createStatement();  
 				ResultSet rs=stmt.executeQuery("select * from HomaTron.status");  
@@ -34,12 +36,11 @@ public class databaseConnection
 				if(rs.getInt("status") == 1)
 				{
 					pullTables();
-					con.close(); 
 					setUpdateCheck = false;
 					System.out.println(rs.getInt("status"));
+					Handler.pushSensorData(defaultArray);
 				}
-				con.close();
-				Handler.checkValueWithSensor(getDefaultData());
+				Handler.checkStatusDevice(defaultArray);
 				
 				
 				try {
@@ -64,7 +65,7 @@ public class databaseConnection
 		try
 		{
 			Class.forName("com.mysql.jdbc.Driver");  
-			Connection con=DriverManager.getConnection("jdbc:mysql://83.86.242.110:3306/" + Database,"HomaTron","HomaTron");  
+			Connection con=DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/" + Database,"HomaTron","HomaTron");  
 	
 			Statement stmt = con.createStatement();  
 			ResultSet rs = stmt.executeQuery("select * from smartrow");  
@@ -76,6 +77,7 @@ public class databaseConnection
 			int outputCommand;
 			int outputDeviceID;
 			int inputDeviceID;
+
 			
 			while(rs.next()) 
 			{ 
@@ -125,7 +127,7 @@ public class databaseConnection
 		try
 		{ 
 			Class.forName("com.mysql.jdbc.Driver");  
-			Connection con=DriverManager.getConnection("jdbc:mysql://83.86.242.110:3306/" + Database,"HomaTron","HomaTron");  
+			Connection con=DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/" + Database,"HomaTron","HomaTron");  
 	
 			Statement stmt = con.createStatement();  
 			ResultSet rs = stmt.executeQuery("select * from smartrow");  
