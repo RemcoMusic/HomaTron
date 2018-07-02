@@ -5,11 +5,11 @@ import org.json.JSONException;
 public class main 
 {
 	
-	private static databaseConnection server = new databaseConnection();	
+	private static databaseConnection test = new databaseConnection();	
 	
 	public static void main(String[] args) 
 	{
-		server.checkForUpdate(true);
+		test.checkForUpdate(true);
 	}
 
 }
